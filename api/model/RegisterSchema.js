@@ -8,7 +8,7 @@ const RegisterSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        trim: true
+        trim: true,
     },
     isProfileComplete: {
         type: Boolean,
