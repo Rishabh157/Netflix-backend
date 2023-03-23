@@ -20,4 +20,4 @@ const RegisterSchema = mongoose.Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('RegisterUser', RegisterSchema);
+module.exports = mongoose.model('registeruser', RegisterSchema);

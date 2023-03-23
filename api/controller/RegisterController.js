@@ -32,7 +32,6 @@ registerUserController.addUser = async (req, res) => {
     }
 };
 
-
 /** for update password or hash and isProfileComplete fields via existing email **/
 registerUserController.addPassword = async (req, res) => {
 
@@ -49,7 +48,8 @@ registerUserController.addPassword = async (req, res) => {
                         { password: hashPassword, isProfileComplete }, // update this fields
                         { new: true }                    // document after update was applied.
                     )
-                    res.send({ status: 'ok', msg: 'password updated successfully', data: addedPassword })
+                    const authToken = jwt.sign({ email }, SERVER_KEY);
+                    res.send({ status: 'ok', msg: 'password updated successfully', data: { data: addedPassword, token: authToken } })
                 } catch (err) {
                     res.send({ status: 'error', msg: 'network problem', data: null })
                 }
@@ -60,40 +60,30 @@ registerUserController.addPassword = async (req, res) => {
     }
 };
 
-
 /** for user login via email or not **/
-
 registerUserController.isUserLogin = async (req, res) => {
 
     const { email, password } = req.body;
-    console.log(req.body)
 
     try {
 
         const foundedData = await RegisterModel.find({ email });
 
-
         if (foundedData?.length > 0) {
 
             const { password: encryptedPassword } = foundedData[0]
 
-            console.log({ encryptedPassword, password })
-
             bcrypt.compare(password, encryptedPassword, async (err, result) => {
-
                 if (result) {
-
                     const authToken = jwt.sign({ email }, SERVER_KEY);
-                    res.send({ status: 'ok', msg: `User is Registered in DB`, token: authToken })
-
+                    res.send({ status: 'ok', msg: `user founded`, data: { data: foundedData, token: authToken } })
                 } else {
                     res.send({ status: 'error', msg: `password is incorrect`, data: null })
                 }
-                // res.send({ status: 'ok', msg: `${email} is Registered in DB`, data: foundedData })
             });
 
         } else {
-            res.send({ status: 'ok', msg: `email not found`, data: null })
+            res.send({ status: 'ok', msg: `${email} is not registered`, data: null })
         }
 
 
@@ -104,26 +94,29 @@ registerUserController.isUserLogin = async (req, res) => {
         res.send({ status: 'error', msg: 'network problem', data: null })
     }
 
-}
+};
 
-/** for user Auth check **/
-
+/** for user Auth check only takes header Authorization jwt token **/
 registerUserController.isAuththicationCheck = async (req, res) => {
 
     const { authorization } = req.headers;
 
-    jwt.verify(authorization, SERVER_KEY, (err, result) => {
-
+    jwt.verify(authorization, SERVER_KEY, async (err, result) => {
         if (err) {
-            console.log('authontication failed')
+            res.send({ status: 'error', msg: 'authentication failed', Authorization: false })
         } else {
-            console.log('authontication pass', authorization)
+            res.send({ status: 'ok', msg: `authorization passed`, Authorization: true })
         }
     });
 
-}
+};
 
 
+registerUserController.subscribe = async (req, res) => {
 
+
+    const { } = req.body;
+
+};
 
 module.exports = registerUserController;
