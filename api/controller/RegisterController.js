@@ -96,22 +96,6 @@ registerUserController.isUserLogin = async (req, res) => {
 
 };
 
-/** for user Auth check only takes header Authorization jwt token **/
-// registerUserController.isAuththicationCheck = async (req, res, next) => {
-
-//     const { authorization } = req.headers;
-
-//     jwt.verify(authorization, SERVER_KEY, async (err, result) => {
-//         if (err) {
-//             res.send({ status: 'error', msg: 'authentication failed', Authorization: false })
-//         } else {
-//             res.send({ status: 'ok', msg: `authorization passed`, Authorization: true })
-//             next()
-//         }
-//     });
-// };
-
-
 registerUserController.subscribe = async (req, res) => {
 
     res.send({ status: 'ok', msg: `from subscribe`, data: req.body })
