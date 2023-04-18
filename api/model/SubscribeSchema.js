@@ -24,6 +24,14 @@ const userSubcription = mongoose.Schema({
         type: String,
         required: true,
     },
+    plan: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: String,
+        required: true
+    }
 }, {
     timestamps: true,
 })

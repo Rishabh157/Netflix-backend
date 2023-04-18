@@ -6,7 +6,6 @@ const registerController = require('../controller/RegisterController');
 router.post('/register-user', registerController.addUser);
 router.post('/add-password', registerController.addPassword);
 router.post('/user-login', registerController.isUserLogin);
-// router.get('/varify-token', registerController.isAuththicationCheck);
 router.post('/subscribe', isAuthenticated, registerController.subscribe);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const RegisterModel = require('../model/RegisterSchema');
+const SubcribeModel = require('../model/SubscribeSchema');
 const jwt = require('jsonwebtoken');
 const SERVER_KEY = process.env.SERVER_KEY;
 const bcrypt = require('bcrypt');
@@ -66,7 +67,6 @@ registerUserController.isUserLogin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-
         const foundedData = await RegisterModel.find({ email });
 
         if (foundedData?.length > 0) {
@@ -81,15 +81,9 @@ registerUserController.isUserLogin = async (req, res) => {
                     res.send({ status: 'error', msg: `password is incorrect`, data: null })
                 }
             });
-
         } else {
             res.send({ status: 'ok', msg: `${email} is not registered`, data: null })
         }
-
-
-        // const { password: hashPassword } = foundedData
-
-
     } catch (err) {
         res.send({ status: 'error', msg: 'network problem', data: null })
     }
@@ -98,7 +92,21 @@ registerUserController.isUserLogin = async (req, res) => {
 
 registerUserController.subscribe = async (req, res) => {
 
-    res.send({ status: 'ok', msg: `from subscribe`, data: req.body })
+
+    const { userId, firstName, lastName, cardNumber, expDate, cvv, plan, price } = req.body;
+    const _id = userId;
+
+    try {
+
+        const createdSubscription = await SubcribeModel.create({ userId, firstName, lastName, cardNumber, expDate, cvv, plan, price })
+        const updatedIsSubscribeKey = await RegisterModel.findByIdAndUpdate( _id , { isSubscribed: true }, { new: true })
+        res.send({ status: 'ok', msg: 'subscribed successfully', data: { createdSubscription, updatedIsSubscribeKey } })
+
+        // res.send({ status: 'ok', msg: 'subscribed successfully', data: updatedIsSubscribeKey })
+
+    } catch (err) {
+        res.send({ status: 'err', msg: 'something went wrong', data: null })
+    }
 
 };
 
