@@ -90,19 +90,27 @@ registerUserController.isUserLogin = async (req, res) => {
 
 };
 
-registerUserController.subscribe = async (req, res) => {
 
+registerUserController.subscribe = async (req, res) => {
 
     const { userId, firstName, lastName, cardNumber, expDate, cvv, plan, price } = req.body;
     const _id = userId;
 
     try {
+        const isUserExisted = await RegisterModel.find({ _id });
 
-        const createdSubscription = await SubcribeModel.create({ userId, firstName, lastName, cardNumber, expDate, cvv, plan, price })
-        const updatedIsSubscribeKey = await RegisterModel.findByIdAndUpdate( _id , { isSubscribed: true }, { new: true })
-        res.send({ status: 'ok', msg: 'subscribed successfully', data: { createdSubscription, updatedIsSubscribeKey } })
+        if (isUserExisted?.length > 0) {
 
-        // res.send({ status: 'ok', msg: 'subscribed successfully', data: updatedIsSubscribeKey })
+            try {
+                const createdSubscription = await SubcribeModel.create({ userId, firstName, lastName, cardNumber, expDate, cvv, plan, price });
+                const updatedIsSubscribeKey = await RegisterModel.findByIdAndUpdate(_id, { isSubscribed: true }, { new: true });
+                res.send({ status: 'ok', msg: 'subscribed successfully', data: { createdSubscription, updatedIsSubscribeKey } });
+            } catch (err) {
+                res.send({ status: 'err', msg: 'something went wrong', data: null })
+            }
+        } else {
+            res.send({ status: 'err', msg: 'please first register yourself', data: isUserExisted });
+        }
 
     } catch (err) {
         res.send({ status: 'err', msg: 'something went wrong', data: null })
